@@ -64,3 +64,5 @@ setTimeout(() => {
 setTimeout(() => {
     x.setSerialPort(portName)
 }, 17000);
+
+module.exports = Lecture
