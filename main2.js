@@ -32,11 +32,11 @@ class Lecture extends EventEmitter {
         const parser = new Readline;
         
         this.sp.pipe(parser);
-        
+        that=this
         parser.on('data',function(data){
             console.log("e")
             //this.dataRead = data
-            this.emit('datta',data)
+            that.emit('datta',data)
 
         });
         
