@@ -1,0 +1,12 @@
+/.nyc_output
+/packages/**/build
+/packages/**/prebuilds
+/coverage
+/docs
+/bin
+/**/
+*.yml
+lerna-debug.log
+node_modules
+npm-debug.log
+package-lock.json
