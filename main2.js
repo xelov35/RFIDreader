@@ -1,65 +1,66 @@
-console.log("1")
-serialport = require("serialport");
+const Serialport = require("serialport");
 const EventEmitter = require('events');
+
 class Lecture extends EventEmitter {
-
-    constructor(serialport,sp){
+    /**
+     * Instancialise une classe de lecture de port Série sur le port donné
+     * @param {string} portName Nom du port de série
+     */
+    constructor(portName) {
         super()
-        //var portName = process.argv[2];
-        this.serialport =serialport;
-        this.sp = sp;
-       //this.emitter=new EventEmitter()
-       
-        console.log("e")
-
-        //this.dataRead = "hjvcbnbnvb"
-       
-        
+        this.portName = portName
+        this.enableListener()
     }
 
-    get_dataRead(){
-        return this.dataRead
-    }
-    fakeReception() {
+    mockReception() {
         setInterval(() => {
-            this.emit('datta', "fake data")
+            this.emit('cardRead', "fake data")
         }, 2000);
     }
-    readData(){
-        console.log("t")
-        const Readline = this.serialport.parsers.Readline;
-        
-        const parser = new Readline;
-        
-        this.sp.pipe(parser);
-        that=this
-        parser.on('data',function(data){
-            console.log("e")
-            //this.dataRead = data
-            that.emit('datta',data)
 
-        });
-        
+    enableListener() {
+        console.log("Initialisation de l'écoute sur le port " + this.portName)
+
+        try {
+            this.sp = new Serialport(this.portName, {baudRate: 9600});
+            this.parser = new Serialport.parsers.Readline()
+            this.sp.pipe(this.parser);
+            const that = this
+            this.parser.addListener('data', function (data) {
+                that.emit('cardRead', data)
+            });
+            console.log("Succès ! En attente de lecture de carte ...")
+        } catch(e) {
+            console.log("Echec de l'écoute, vérifiez le port série")
+            throw e;
+        }
+
+    }
+    disableListener() {
+        console.log("Désactivation écoute")
+        this.sp.close(()=>{})
+        this.sp.destroy()
+        this.parser.destroy()
+    }
+    reloadListener() {
+        this.disableListener()
+        this.enableListener()
+    }
+    setSerialPort(portName) {
+        this.portName = portName
+        this.reloadListener()
     }
 
-    
-   
 }
-console.log("e")
 
- console.log("e")
- portName = "COM3";
- 
-    sp = new serialport(portName,{
-            baudRate:9600
-        });
-
-
-x= new Lecture(serialport,sp);
-//x.readData();
-x.fakeReception()
-x.on('datta',function(data){
-    console.log("INTERFACE"  + data)
+portName = "/dev/tty.usbmodem14101";
+x = new Lecture(portName);
+x.on('cardRead', function (data) {
+    console.log("INTERFACE: " + data)
 })
-//var y = x.get_dataRead()
-//console.log(y);
+setTimeout(() => {
+    x.setSerialPort("COM3")
+}, 10000);
+setTimeout(() => {
+    x.setSerialPort(portName)
+}, 17000);
