@@ -8,6 +8,7 @@
   },
   "license": "MIT",
   "scripts": {
+    "start": "node main2.js",
     "rebuild": "lerna run --stream rebuild",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "docs": "cd packages/website && npm run build",
